@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Habit Tracker Pro - Ultimate Analytics</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-primary: #3b82f6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --accent-fire: #f97316;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 12px; min-height: 100vh; }
+        .container { max-width: 1350px; margin: 0 auto; }
+
+        .greeting-section {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .user-name-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .greeting-title { font-size: 1.2rem; font-weight: 700; }
+        .user-name-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed var(--accent-primary);
+            color: #60a5fa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            outline: none;
+            padding: 2px 4px;
+            max-width: 160px;
+        }
+
+        .motivational-quote { font-size: 0.85rem; color: #94a3b8; font-style: italic; margin-bottom: 12px; line-height: 1.4; }
+        
+        .planning-banner {
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid var(--accent-primary);
+            color: #93c5fd;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .planning-banner.sunday {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: var(--accent-warning);
+            color: #fcd34d;
+        }
+
+        .feedback-banner { padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 500; display: block; text-align: center; }
+        .feedback-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent-success); }
+        .feedback-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid var(--accent-warning); }
+        .feedback-neutral { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid var(--accent-primary); }
+
+        .identity-banner {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed var(--accent-success);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+        .identity-banner input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #10b981;
+            color: var(--accent-success);
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 180px;
+            outline: none;
+        }
+
+        .tasks-section {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        .tasks-header-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .task-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; border-radius: 10px; background: #0f172a; }
+        .task-row.mit { border: 1.5px solid var(--accent-fire); background: rgba(249, 115, 22, 0.08); }
+        .task-badge { font-size: 0.7rem; font-weight: 800; padding: 4px 6px; border-radius: 6px; text-transform: uppercase; white-space: nowrap; }
+        .task-badge.mit { background: var(--accent-fire); color: #fff; }
+        .task-badge.sec { background: var(--border-color); color: var(--text-muted); }
+        .task-checkbox { width: 24px; height: 24px; accent-color: var(--accent-success); cursor: pointer; flex-shrink: 0; }
+        .task-input { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 0.9rem; font-weight: 500; outline: none; }
+        .task-input.completed { text-decoration: line-through; color: var(--text-muted); }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .streak-badge { background: rgba(249, 115, 22, 0.15); border: 1px solid var(--accent-fire); color: var(--accent-fire); padding: 8px 14px; border-radius: 20px; font-weight: 800; font-size: 0.95rem; width: 100%; text-align: center; }
+        .controls-group { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: space-between; flex-wrap: wrap; }
+
+        select, button, input {
+            background-color: #0f172a;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+            min-height: 44px;
+        }
+        select { min-width: 90px; color: #ffffff !important; background-color: #0f172a !important; cursor: pointer; }
+        button { cursor: pointer; background-color: var(--accent-primary); border: none; font-weight: 600; transition: all 0.2s; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        button:active { transform: scale(0.98); }
+        button.btn-reset { background-color: transparent; color: var(--accent-danger); border: 1px solid var(--accent-danger); }
+        button.btn-undo { background-color: transparent; color: var(--accent-warning); border: 1px solid var(--accent-warning); }
+        button.btn-gcal { background-color: #4285f4; color: #fff; width: 100%; }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; }
+        .card-title { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .card-value { font-size: 1.4rem; font-weight: bold; color: var(--accent-success); }
+        .card-value.fire { color: var(--accent-fire); }
+
+        .analytics-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
+        .analytics-card { background: var(--card-bg); padding: 16px; border-radius: 14px; border: 1px solid var(--border-color); }
+        .analytics-header { font-size: 0.88rem; font-weight: 700; color: #93c5fd; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .heatmap-container { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-start; }
+        .heatmap-box { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #ffffff; }
+
+        .level-0 { background: #1e293b; border: 1px solid var(--border-color); color: var(--text-muted); }
+        .level-1 { background: #064e3b; color: #a7f3d0; }
+        .level-2 { background: #047857; color: #ffffff; }
+        .level-3 { background: #10b981; color: #ffffff; }
+        .level-4 { background: #34d399; color: #0f172a; }
+
+        .heatmap-legend { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; }
+        .legend-box { width: 10px; height: 10px; border-radius: 2px; }
+
+        .chart-box { position: relative; width: 100%; height: 160px; }
+        canvas { width: 100% !important; height: 100% !important; display: block; }
+
+        .tracker-section { background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .add-habit-form { display: flex; gap: 8px; margin-bottom: 16px; flex-direction: column; }
+        .add-habit-form input { width: 100%; }
+        .add-habit-form button { width: 100%; }
+
+        /* VISTA MÓVIL POR DÍA (CARRUSEL Y TARJETAS) */
+        .mobile-day-selector { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; background: #0f172a; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .mobile-day-nav { display: flex; justify-content: space-between; align-items: center; }
+        .mobile-days-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .mobile-day-pill { flex: 0 0 auto; width: 46px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1e293b; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; scroll-snap-align: center; }
+        .mobile-day-pill.active { background: var(--accent-primary); border-color: var(--accent-primary); color: #fff; }
+        .mobile-day-pill .num { font-weight: bold; font-size: 0.95rem; }
+        .mobile-day-pill .name { font-size: 0.68rem; opacity: 0.8; }
+
+        .mobile-habits-list { display: flex; flex-direction: column; gap: 10px; }
+        .mobile-habit-card { display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer; }
+        .mobile-habit-card.checked { border-color: var(--accent-success); background: rgba(16, 185, 129, 0.08); }
+        .mobile-habit-info { display: flex; flex-direction: column; gap: 4px; flex: 1; padding-right: 10px; }
+        .mobile-habit-title { font-size: 0.92rem; font-weight: 600; color: var(--text-main); }
+        .mobile-habit-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 8px; flex-wrap: wrap; }
+        .mobile-habit-actions { display: flex; align-items: center; gap: 10px; }
+
+        /* TABLA ESCRITORIO */
+        .table-wrapper { display: none; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th.habit-header, td.habit-cell { text-align: left; padding-left: 8px; position: sticky; left: 0; background: var(--card-bg); z-index: 2; min-width: 250px; }
+        .habit-name-editable { background: transparent; border: 1px solid transparent; color: var(--text-main); font-size: 0.85rem; padding: 4px; border-radius: 4px; width: calc(100% - 30px); }
+
+        .day-col { width: 26px; }
+        .day-number { font-size: 0.75rem; }
+        .day-name { font-size: 0.65rem; color: var(--text-muted); }
+        .today-highlight { background-color: rgba(59, 130, 246, 0.2) !important; border-radius: 4px; }
+        .habit-streak-pill { display: inline-block; font-size: 0.7rem; font-weight: bold; color: var(--accent-fire); background: rgba(249, 115, 22, 0.1); padding: 2px 4px; border-radius: 4px; }
+        .delete-btn { background: transparent; color: #ef4444; padding: 4px 6px; font-size: 0.8rem; border: none; cursor: pointer; }
+
+        .backup-controls { display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); margin-top: 16px; }
+        .backup-buttons { display: flex; gap: 8px; width: 100%; }
+        .backup-buttons button { flex: 1; font-size: 0.78rem; }
+        .info-note { font-size: 0.78rem; color: var(--text-muted); text-align: center; margin-top: 12px; }
+
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .greeting-section { padding: 22px 25px; }
+            .greeting-title { font-size: 1.6rem; }
+            .user-name-input { font-size: 1.5rem; max-width: 250px; }
+            .streak-badge { width: auto; font-size: 1.1rem; }
+            .controls-group { width: auto; justify-content: flex-end; }
+            button.btn-gcal { width: auto; }
+            .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+            .analytics-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .add-habit-form { flex-direction: row; }
+            .add-habit-form button { width: auto; }
+            .tasks-header-title { flex-direction: row; justify-content: space-between; }
+            
+            .mobile-day-selector, .mobile-habits-list { display: none; }
+            .table-wrapper { display: block; }
+            .backup-controls { flex-direction: row; justify-content: space-between; align-items: center; }
+            .backup-buttons { width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="greeting-section">
+        <div class="user-name-container">
+            <span class="greeting-title" id="greetingPrefix">¡Hola!</span>
+            <input type="text" id="userNameInput" class="user-name-input" placeholder="Tu Nombre" oninput="saveUserName()">
+            <span class="greeting-title" id="greetingSuffix"></span>
+        </div>
+        
+        <div class="motivational-quote">
+            "Cuando el rendimiento se mide, dicho rendimiento mejora. Cuando el rendimiento se mide y se informa, el ritmo de mejoramiento se acelera" — Thomas S. Monson
+        </div>
+
+        <div class="planning-banner" id="planningBanner">
+            <span id="planningText">📌 Planeamiento Diario: Es un excelente momento para organizar tu agenda de hoy en Google Calendar.</span>
+            <button class="btn-gcal" style="padding: 6px 12px; font-size: 0.8rem;" onclick="addToGoogleCalendar()">📅 Abrir Calendar</button>
+        </div>
+
+        <div class="feedback-banner" id="dailyFeedback">Estado del día listo.</div>
+    </div>
+
+    <div class="identity-banner">
+        <span>👤 <strong>Identidad:</strong> Soy el tipo de persona que</span>
+        <input type="text" id="identityInput" placeholder="ej: cumple su palabra y es constante" oninput="saveIdentity()">
+    </div>
+
+    <div class="tasks-section">
+        <div class="tasks-header-title">
+            <span>🎯 Las 3 Tareas Clave del Día</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">Regla 80/20: Lo más importante primero</span>
+        </div>
+        <div class="task-row mit">
+            <span class="task-badge mit">🔥 Tarea #1</span>
+            <input type="checkbox" id="task1Check" class="task-checkbox" onchange="toggleTask(1)">
+            <input type="text" id="task1Input" class="task-input" placeholder="Tarea más crítica de hoy..." oninput="saveTasks()">
+        </div>
+        <div class="task-row">
+            <span class="task-badge sec">Tarea #2</span>
+            <input type="checkbox" id="task2Check" class="task-checkbox" onchange="toggleTask(2)">
+            <input type="text" id="task2Input" class="task-input" placeholder="Segunda tarea importante..." oninput="saveTasks()">
+        </div>
+        <div class="task-row">
+            <span class="task-badge sec">Tarea #3</span>
+            <input type="checkbox" id="task3Check" class="task-checkbox" onchange="toggleTask(3)">
+            <input type="text" id="task3Input" class="task-input" placeholder="Tercera tarea importante..." oninput="saveTasks()">
+        </div>
+    </div>
+
+    <header>
+        <div class="streak-badge">🔥 <span id="globalStreakCount">0</span> DÍAS DE RACHA</div>
+        <div class="controls-group">
+            <button class="btn-undo" onclick="undoLastAction()">↩️ Deshacer</button>
+            <button class="btn-reset" onclick="resetCurrentMonth()">🧹 Limpiar</button>
+            <div style="display:flex; gap:4px;">
+                <select id="monthSelect"></select>
+                <select id="yearSelect"></select>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="card-title">Racha Actual</div>
+            <div class="card-value fire" id="cardStreak">🔥 0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Cumplimiento</div>
+            <div class="card-value" id="overallProgress">0%</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Mejor Racha</div>
+            <div class="card-value fire" id="bestStreak">🏆 0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Días 100%</div>
+            <div class="card-value" id="perfectDaysCount">0</div>
+        </div>
+    </div>
+
+    <div class="analytics-grid">
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <span>🔥 Mapa de Calor del Mes</span>
+            </div>
+            <div class="heatmap-container" id="heatmapGrid"></div>
+            <div class="heatmap-legend">
+                <span>Menos</span>
+                <div class="legend-box level-0"></div>
+                <div class="legend-box level-1"></div>
+                <div class="legend-box level-2"></div>
+                <div class="legend-box level-3"></div>
+                <div class="legend-box level-4"></div>
+                <span>100%</span>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <div class="analytics-header">
+                <span>📈 Tendencia de Avance (% Cumplido)</span>
+            </div>
+            <div class="chart-box">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="tracker-section">
+        <div class="add-habit-form">
+            <input type="text" id="newHabitInput" placeholder="Añadir hábito (ej: Meditar 10 min)...">
+            <button type="button" id="addBtn" onclick="addHabit()">+ Agregar Hábito</button>
+        </div>
+
+        <!-- VISTA MÓVIL POR DÍA -->
+        <div class="mobile-day-selector">
+            <div class="mobile-day-nav">
+                <button style="padding:6px 12px; font-size:0.75rem;" onclick="changeSelectedDay(-1)">◀ Anterior</button>
+                <span id="selectedDayLabel" style="font-size:0.85rem; font-weight:bold; color:var(--accent-primary);">Día Seleccionado</span>
+                <button style="padding:6px 12px; font-size:0.75rem;" onclick="changeSelectedDay(1)">Siguiente ▶</button>
+            </div>
+            <div class="mobile-days-scroll" id="mobileDaysScroll"></div>
+        </div>
+
+        <div class="mobile-habits-list" id="mobileHabitsList"></div>
+
+        <!-- VISTA ESCRITORIO -->
+        <div class="table-wrapper">
+            <table id="trackerTable">
+                <thead>
+                    <tr id="headerRow">
+                        <th class="habit-header">Hábito</th>
+                        <th>Racha</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody id="habitsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="backup-controls">
+        <div style="font-size: 0.85rem; color: var(--text-muted);">💾 Copia de Seguridad:</div>
+        <div class="backup-buttons">
+            <button onclick="exportData()" style="background:#334155;">📥 Descargar</button>
+            <button onclick="document.getElementById('importFile').click()" style="background:#334155;">📤 Cargar</button>
+            <input type="file" id="importFile" style="display:none;" onchange="importData(event)">
+        </div>
+    </div>
+
+    <p class="info-note">🔒 Tus datos se guardan **automáticamente en tu navegador**. Basado en principios de *Hábitos Atómicos*.</p>
+</div>
+
+<script>
+    const monthsArr = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+    const defaultHabitsArr = [
+        "Prospección / Contactos nuevos",
+        "Orar en la mañana",
+        "Ejercicio / gym",
+        "Disciplina digital",
+        "Estudiar / Aprendizaje — 30 min",
+        "Lectura de desarrollo personal — 20 min",
+        "Orar en la noche",
+        "Redes sociales bajo control"
+    ];
+
+    let currentMonthNum = new Date().getMonth();
+    let currentYearNum = new Date().getFullYear();
+    let selectedDayNum = new Date().getDate();
+
+    let appDataObj = JSON.parse(localStorage.getItem("habit_tracker_user_data_v1")) || {};
+    let historyStackArr = [];
+
+    function initApp() {
+        populateMonthYearSelectors();
+        loadMonthDataKey();
+        loadUserName();
+        setGreetingAndPlanningText();
+        loadIdentityText();
+        loadTasksData();
+        renderMainTable();
+        window.addEventListener('resize', renderMainTable);
+    }
+
+    function loadUserName() {
+        let savedName = localStorage.getItem("habit_tracker_user_name") || "";
+        document.getElementById("userNameInput").value = savedName;
+    }
+
+    function saveUserName() {
+        let val = document.getElementById("userNameInput").value.trim();
+        localStorage.setItem("habit_tracker_user_name", val);
+        setGreetingAndPlanningText();
+    }
+
+    function setGreetingAndPlanningText() {
+        let now = new Date();
+        let hour = now.getHours();
+        let dayOfWeek = now.getDay();
+        
+        let prefixElem = document.getElementById("greetingPrefix");
+        let suffixElem = document.getElementById("greetingSuffix");
+        let userName = localStorage.getItem("habit_tracker_user_name") || "";
+        
+        let timeWord = "días";
+        if (hour >= 12 && hour < 19) timeWord = "tardes";
+        else if (hour >= 19 || hour < 5) timeWord = "noches";
+
+        if (userName) {
+            prefixElem.textContent = "¡Buenas " + timeWord + ", ";
+            suffixElem.textContent = "!";
+        } else {
+            prefixElem.textContent = "¡Buenas " + timeWord + "! 👋";
+            suffixElem.textContent = "";
+        }
+
+        let planningBanner = document.getElementById("planningBanner");
+        let planningText = document.getElementById("planningText");
+
+        if (dayOfWeek === 0) {
+            planningBanner.classList.add("sunday");
+            planningText.textContent = "📅 Planeamiento Semanal: Hoy es domingo, proyecta tus metas en Google Calendar.";
+        } else {
+            planningBanner.classList.remove("sunday");
+            planningText.textContent = "📌 Planeamiento Diario: Organiza tu agenda de hoy en Google Calendar.";
+        }
+    }
+
+    function pushToHistoryStack() {
+        if (historyStackArr.length >= 10) historyStackArr.shift();
+        historyStackArr.push(JSON.stringify(appDataObj));
+    }
+
+    function undoLastAction() {
+        if (historyStackArr.length === 0) {
+            alert("No hay acciones recientes para deshacer.");
+            return;
+        }
+        appDataObj = JSON.parse(historyStackArr.pop());
+        saveDataLocally();
+        renderMainTable();
+    }
+
+    function resetCurrentMonth() {
+        let key = getMonthKeyString();
+        if (!confirm("¿Estás seguro de que deseas limpiar TODOS los registros de este mes?")) return;
+        pushToHistoryStack();
+        if (appDataObj[key]) {
+            appDataObj[key].habits.forEach(h => { appDataObj[key].logs[h] = {}; });
+            saveDataLocally();
+            renderMainTable();
+        }
+    }
+
+    function loadIdentityText() {
+        let saved = localStorage.getItem("habit_tracker_identity") || "cumple su palabra y es constante";
+        document.getElementById("identityInput").value = saved;
+    }
+
+    function saveIdentity() {
+        let val = document.getElementById("identityInput").value;
+        localStorage.setItem("habit_tracker_identity", val);
+    }
+
+    function getTodayKeyString() {
+        let today = new Date();
+        return today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+    }
+
+    function loadTasksData() {
+        let all = JSON.parse(localStorage.getItem("habit_tracker_3tasks")) || {};
+        let key = getTodayKeyString();
+        let todayTasks = all[key] || [{ text: "", completed: false }, { text: "", completed: false }, { text: "", completed: false }];
+
+        for (let i = 1; i <= 3; i++) {
+            let inp = document.getElementById("task" + i + "Input");
+            let chk = document.getElementById("task" + i + "Check");
+            if (todayTasks[i - 1]) {
+                inp.value = todayTasks[i - 1].text || "";
+                chk.checked = !!todayTasks[i - 1].completed;
+                if (chk.checked) inp.classList.add("completed");
+                else inp.classList.remove("completed");
+            }
+        }
+    }
+
+    function saveTasks() {
+        let all = JSON.parse(localStorage.getItem("habit_tracker_3tasks")) || {};
+        let key = getTodayKeyString();
+        let todayArr = [];
+
+        for (let i = 1; i <= 3; i++) {
+            let inp = document.getElementById("task" + i + "Input");
+            let chk = document.getElementById("task" + i + "Check");
+            todayArr.push({ text: inp.value, completed: chk.checked });
+        }
+
+        all[key] = todayArr;
+        localStorage.setItem("habit_tracker_3tasks", JSON.stringify(all));
+    }
+
+    function toggleTask(index) {
+        let inp = document.getElementById("task" + index + "Input");
+        let chk = document.getElementById("task" + index + "Check");
+        if (chk.checked) inp.classList.add("completed");
+        else inp.classList.remove("completed");
+        saveTasks();
+    }
+
+    function addToGoogleCalendar() {
+        let now = new Date();
+        let isSunday = now.getDay() === 0;
+
+        let title = isSunday 
+            ? encodeURIComponent("🗓️ Planeamiento Semanal y Definición de Metas")
+            : encodeURIComponent("🎯 Revisar y Completar Hábitos Diarios");
+
+        let details = isSunday
+            ? encodeURIComponent("Sesión de planeamiento semanal: definir prioridades y alinear hábitos.")
+            : encodeURIComponent("Revisar mi Habit Tracker Pro para marcar hábitos y tareas clave.");
+
+        let recur = isSunday ? "RRULE:FREQ=WEEKLY;BYDAY=SU" : "RRULE:FREQ=DAILY";
+        let url = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + title + "&details=" + details + "&recur=" + recur;
+        window.open(url, "_blank");
+    }
+
+    function updateSmartFeedbackMsg(dailyTotals, totalHabits) {
+        let today = new Date().getDate();
+        let feedbackElem = document.getElementById("dailyFeedback");
+        let isCurrentMonth = (currentMonthNum === new Date().getMonth() && currentYearNum === new Date().getFullYear());
+        let name = localStorage.getItem("habit_tracker_user_name") || "";
+
+        if (!isCurrentMonth || totalHabits === 0) {
+            feedbackElem.className = "feedback-banner feedback-neutral";
+            feedbackElem.textContent = "📊 Visualizando historial de hábitos.";
+            return;
+        }
+
+        let todayCompleted = dailyTotals[today - 1] || 0;
+        let pct = Math.round((todayCompleted / totalHabits) * 100);
+
+        if (pct === 100) {
+            feedbackElem.className = "feedback-banner feedback-success";
+            feedbackElem.textContent = "🔥 ¡Impecable" + (name ? " " + name : "") + "! 100% completado hoy (" + todayCompleted + "/" + totalHabits + ").";
+        } else if (pct >= 50) {
+            feedbackElem.className = "feedback-banner feedback-neutral";
+            feedbackElem.textContent = "📈 Vas bien (" + pct + "% completado). Un último esfuerzo para el 100%.";
+        } else {
+            feedbackElem.className = "feedback-banner feedback-warning";
+            feedbackElem.textContent = "⚡ Completado: " + pct + "% (" + todayCompleted + "/" + totalHabits + "). ¡El 1% diario suma!";
+        }
+    }
+
+    function populateMonthYearSelectors() {
+        let monthSelect = document.getElementById("monthSelect");
+        let yearSelect = document.getElementById("yearSelect");
+
+        monthSelect.innerHTML = "";
+        monthsArr.forEach((m, i) => {
+            let opt = document.createElement("option");
+            opt.value = i;
+            opt.textContent = m;
+            if (i === currentMonthNum) opt.selected = true;
+            monthSelect.appendChild(opt);
+        });
+
+        yearSelect.innerHTML = "";
+        for (let y = currentYearNum - 1; y <= currentYearNum + 2; y++) {
+            let optY = document.createElement("option");
+            optY.value = y;
+            optY.textContent = y;
+            if (y === currentYearNum) optY.selected = true;
+            yearSelect.appendChild(optY);
+        }
+
+        monthSelect.onchange = function(e) {
+            currentMonthNum = parseInt(e.target.value);
+            loadMonthDataKey();
+            renderMainTable();
+        };
+
+        yearSelect.onchange = function(e) {
+            currentYearNum = parseInt(e.target.value);
+            loadMonthDataKey();
+            renderMainTable();
+        };
+    }
+
+    function getMonthKeyString(m, y) {
+        if (m === undefined) m = currentMonthNum;
+        if (y === undefined) y = currentYearNum;
+        return y + "-" + String(m + 1).padStart(2, '0');
+    }
+
+    function loadMonthDataKey() {
+        let key = getMonthKeyString();
+        if (!appDataObj[key]) {
+            appDataObj[key] = {
+                habits: defaultHabitsArr.slice(),
+                logs: {}
+            };
+            defaultHabitsArr.forEach(h => { appDataObj[key].logs[h] = {}; });
+            saveDataLocally();
+        }
+    }
+
+    function saveDataLocally() {
+        localStorage.setItem("habit_tracker_user_data_v1", JSON.stringify(appDataObj));
+    }
+
+    function getDaysInMonthCount(month, year) {
+        return new Date(year, month + 1, 0).getDate();
+    }
+
+    function calculateHabitStreakCount(habitName) {
+        let streak = 0;
+        let checkDate = new Date();
+        let key = getMonthKeyString(checkDate.getMonth(), checkDate.getFullYear());
+        let todayDayNum = checkDate.getDate();
+
+        let isTodayMarked = appDataObj[key] && appDataObj[key].logs[habitName] && appDataObj[key].logs[habitName][todayDayNum];
+        if (!isTodayMarked) checkDate.setDate(checkDate.getDate() - 1);
+
+        while (true) {
+            let y = checkDate.getFullYear();
+            let m = checkDate.getMonth();
+            let d = checkDate.getDate();
+            let monthKey = getMonthKeyString(m, y);
+
+            if (appDataObj[monthKey] && appDataObj[monthKey].logs[habitName] && appDataObj[monthKey].logs[habitName][d]) {
+                streak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else break;
+        }
+        return streak;
+    }
+
+    function calculateGlobalStreakObj() {
+        let streak = 0;
+        let maxStreak = JSON.parse(localStorage.getItem("habit_tracker_max_streak")) || 0;
+        let checkDate = new Date();
+        let key = getMonthKeyString(checkDate.getMonth(), checkDate.getFullYear());
+        let todayDayNum = checkDate.getDate();
+
+        let isAnyTodayMarked = false;
+        if (appDataObj[key]) {
+            for (let h of appDataObj[key].habits) {
+                if (appDataObj[key].logs[h] && appDataObj[key].logs[h][todayDayNum]) {
+                    isAnyTodayMarked = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isAnyTodayMarked) checkDate.setDate(checkDate.getDate() - 1);
+
+        while (true) {
+            let y = checkDate.getFullYear();
+            let m = checkDate.getMonth();
+            let d = checkDate.getDate();
+            let monthKey = getMonthKeyString(m, y);
+
+            let dayAnyCompleted = false;
+            if (appDataObj[monthKey]) {
+                for (let h of appDataObj[monthKey].habits) {
+                    if (appDataObj[monthKey].logs[h] && appDataObj[monthKey].logs[h][d]) {
+                        dayAnyCompleted = true;
+                        break;
+                    }
+                }
+            }
+
+            if (dayAnyCompleted) {
+                streak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else break;
+        }
+
+        if (streak > maxStreak) {
+            maxStreak = streak;
+            localStorage.setItem("habit_tracker_max_streak", JSON.stringify(maxStreak));
+        }
+
+        return { current: streak, max: maxStreak };
+    }
+
+    function changeSelectedDay(delta) {
+        let numDays = getDaysInMonthCount(currentMonthNum, currentYearNum);
+        selectedDayNum += delta;
+        if (selectedDayNum < 1) selectedDayNum = 1;
+        if (selectedDayNum > numDays) selectedDayNum = numDays;
+        renderMainTable();
+    }
+
+    function toggleHabitForDay(habit, day) {
+        pushToHistoryStack();
+        let key = getMonthKeyString();
+        if (!appDataObj[key].logs[habit]) appDataObj[key].logs[habit] = {};
+        appDataObj[key].logs[habit][day] = !appDataObj[key].logs[habit][day];
+        saveDataLocally();
+        renderMainTable();
+    }
+
+    function renderMainTable() {
+        let key = getMonthKeyString();
+        let monthData = appDataObj[key];
+        let numDays = getDaysInMonthCount(currentMonthNum, currentYearNum);
+        let todayDate = new Date().getDate();
+        let isCurrentMonth = (currentMonthNum === new Date().getMonth() && currentYearNum === new Date().getFullYear());
+        
+        if (selectedDayNum > numDays) selectedDayNum = numDays;
+
+        let dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+        // CARRUSEL MÓVIL
+        let scrollContainer = document.getElementById("mobileDaysScroll");
+        scrollContainer.innerHTML = "";
+        
+        for (let d = 1; d <= numDays; d++) {
+            let date = new Date(currentYearNum, currentMonthNum, d);
+            let pill = document.createElement("div");
+            pill.className = "mobile-day-pill" + (d === selectedDayNum ? " active" : "");
+            pill.innerHTML = '<span class="num">' + d + '</span><span class="name">' + dayNames[date.getDay()] + '</span>';
+            pill.onclick = function() {
+                selectedDayNum = d;
+                renderMainTable();
+            };
+            scrollContainer.appendChild(pill);
+        }
+
+        let selectedDateObj = new Date(currentYearNum, currentMonthNum, selectedDayNum);
+        document.getElementById("selectedDayLabel").textContent = selectedDayNum + " " + monthsArr[currentMonthNum] + " (" + dayNames[selectedDateObj.getDay()] + ")";
+
+        let mobileHabitsList = document.getElementById("mobileHabitsList");
+        mobileHabitsList.innerHTML = "";
+
+        // TABLA ESCRITORIO
+        let headerRow = document.getElementById("headerRow");
+        headerRow.innerHTML = '<th class="habit-header">Hábito</th>';
+
+        for (let d = 1; d <= numDays; d++) {
+            let date = new Date(currentYearNum, currentMonthNum, d);
+            let th = document.createElement("th");
+            th.className = "day-col";
+            if (isCurrentMonth && d === todayDate) th.classList.add("today-highlight");
+            th.innerHTML = '<div class="day-number">' + d + '</div><div class="day-name">' + dayNames[date.getDay()] + '</div>';
+            headerRow.appendChild(th);
+        }
+
+        let thStreak = document.createElement("th"); thStreak.textContent = "Racha"; headerRow.appendChild(thStreak);
+        let thProg = document.createElement("th"); thProg.textContent = "%"; headerRow.appendChild(thProg);
+
+        let tbody = document.getElementById("habitsBody");
+        tbody.innerHTML = "";
+
+        let totalCheckboxes = 0;
+        let checkedCheckboxes = 0;
+        let dailyTotals = new Array(numDays).fill(0);
+
+        monthData.habits.forEach((habit, habitIdx) => {
+            let habitCheckedCount = 0;
+
+            // Escritorio
+            let tr = document.createElement("tr");
+            let tdName = document.createElement("td");
+            tdName.className = "habit-cell";
+            
+            let inputName = document.createElement("input");
+            inputName.className = "habit-name-editable";
+            inputName.value = habit;
+            inputName.onchange = function(e) { renameHabitItem(habitIdx, e.target.value.trim()); };
+            tdName.appendChild(inputName);
+            
+            let delBtn = document.createElement("button");
+            delBtn.className = "delete-btn";
+            delBtn.textContent = "✕";
+            delBtn.onclick = function() { deleteHabitItem(habit); };
+            tdName.appendChild(delBtn);
+            tr.appendChild(tdName);
+
+            for (let dayNum = 1; dayNum <= numDays; dayNum++) {
+                let td = document.createElement("td");
+                if (isCurrentMonth && dayNum === todayDate) td.classList.add("today-highlight");
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                
+                let isChecked = monthData.logs[habit] && monthData.logs[habit][dayNum];
+                if (isChecked) {
+                    checkbox.checked = true;
+                    habitCheckedCount++;
+                    dailyTotals[dayNum - 1]++;
+                }
+
+                checkbox.onchange = function(e) {
+                    pushToHistoryStack();
+                    if (!monthData.logs[habit]) monthData.logs[habit] = {};
+                    monthData.logs[habit][dayNum] = e.target.checked;
+                    saveDataLocally();
+                    renderMainTable();
+                };
+
+                td.appendChild(checkbox);
+                tr.appendChild(td);
+            }
+
+            totalCheckboxes += numDays;
+            checkedCheckboxes += habitCheckedCount;
+
+            let hStreak = calculateHabitStreakCount(habit);
+            let tdHabitStreak = document.createElement("td");
+            tdHabitStreak.innerHTML = hStreak > 0 ? '<span class="habit-streak-pill">🔥 ' + hStreak + '</span>' : '<span style="color:var(--text-muted)">-</span>';
+            tr.appendChild(tdHabitStreak);
+
+            let tdPct = document.createElement("td");
+            let pct = Math.round((habitCheckedCount / numDays) * 100);
+            tdPct.style.fontWeight = "bold";
+            tdPct.style.color = pct >= 80 ? "var(--accent-success)" : "var(--text-main)";
+            tdPct.textContent = pct + "%";
+            tr.appendChild(tdPct);
+            tbody.appendChild(tr);
+
+            // Móvil
+            let isDayChecked = !!(monthData.logs[habit] && monthData.logs[habit][selectedDayNum]);
+            let mobileCard = document.createElement("div");
+            mobileCard.className = "mobile-habit-card" + (isDayChecked ? " checked" : "");
+            
+            mobileCard.innerHTML = `
+                <div class="mobile-habit-info">
+                    <div class="mobile-habit-title">${habit}</div>
+                    <div class="mobile-habit-meta">
+                        <span>🔥 Racha: ${hStreak} días</span>
+                        <span>| Progreso: ${pct}%</span>
+                    </div>
+                </div>
+                <div class="mobile-habit-actions">
+                    <button class="delete-btn" style="padding:6px;" onclick="event.stopPropagation(); deleteHabitItem('${habit}');">🗑️</button>
+                    <input type="checkbox" class="task-checkbox" ${isDayChecked ? "checked" : ""} onclick="event.stopPropagation(); toggleHabitForDay('${habit}', ${selectedDayNum});">
+                </div>
+            `;
+
+            mobileCard.onclick = function() { toggleHabitForDay(habit, selectedDayNum); };
+            mobileHabitsList.appendChild(mobileCard);
+        });
+
+        let globalStreaks = calculateGlobalStreakObj();
+        document.getElementById("globalStreakCount").textContent = globalStreaks.current;
+        document.getElementById("cardStreak").textContent = "🔥 " + globalStreaks.current;
+        document.getElementById("bestStreak").textContent = "🏆 " + globalStreaks.max;
+
+        let activeHabits = monthData.habits.length;
+        let overallPct = totalCheckboxes > 0 ? Math.round((checkedCheckboxes / totalCheckboxes) * 100) : 0;
+        document.getElementById("overallProgress").textContent = overallPct + "%";
+
+        let perfectDays = 0;
+        if (activeHabits > 0) perfectDays = dailyTotals.filter(count => count === activeHabits).length;
+        document.getElementById("perfectDaysCount").textContent = perfectDays;
+
+        updateSmartFeedbackMsg(dailyTotals, activeHabits);
+        renderHeatmap(dailyTotals, activeHabits, numDays);
+        renderTrendChart(dailyTotals, activeHabits, numDays);
+    }
+
+    function renderHeatmap(dailyTotals, activeHabits, numDays) {
+        let grid = document.getElementById("heatmapGrid");
+        grid.innerHTML = "";
+
+        for (let d = 1; d <= numDays; d++) {
+            let completed = dailyTotals[d - 1] || 0;
+            let pct = activeHabits > 0 ? Math.round((completed / activeHabits) * 100) : 0;
+
+            let levelClass = "level-0";
+            if (pct > 0 && pct <= 25) levelClass = "level-1";
+            else if (pct > 25 && pct <= 50) levelClass = "level-2";
+            else if (pct > 50 && pct <= 75) levelClass = "level-3";
+            else if (pct > 75) levelClass = "level-4";
+
+            let box = document.createElement("div");
+            box.className = "heatmap-box " + levelClass;
+            box.textContent = d;
+            box.onclick = function() { selectedDayNum = d; renderMainTable(); };
+            grid.appendChild(box);
+        }
+    }
+
+    function renderTrendChart(dailyTotals, activeHabits, numDays) {
+        let canvas = document.getElementById("trendChart");
+        if (!canvas) return;
+        let ctx = canvas.getContext("2d");
+
+        let box = canvas.parentElement;
+        canvas.width = box.clientWidth || 300;
+        canvas.height = box.clientHeight || 160;
+
+        let width = canvas.width;
+        let height = canvas.height;
+        let padding = 20;
+
+        ctx.clearRect(0, 0, width, height);
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 1;
+
+        for (let p = 0; p <= 100; p += 50) {
+            let y = height - padding - (p / 100) * (height - 2 * padding);
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+        }
+
+        let points = [];
+        let stepX = (width - 2 * padding) / (numDays - 1 || 1);
+
+        for (let d = 1; d <= numDays; d++) {
+            let completed = dailyTotals[d - 1] || 0;
+            let pct = activeHabits > 0 ? (completed / activeHabits) * 100 : 0;
+            let x = padding + (d - 1) * stepX;
+            let y = height - padding - (pct / 100) * (height - 2 * padding);
+            points.push({ x: x, y: y });
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, height - padding);
+        points.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(points[points.length - 1].x, height - padding);
+        ctx.closePath();
+
+        let gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, "rgba(16, 185, 129, 0.35)");
+        gradient.addColorStop(1, "rgba(16, 185, 129, 0.0)");
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 2.5;
+        points.forEach((p, i) => {
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+    }
+
+    function renameHabitItem(index, newName) {
+        if (!newName) return;
+        let key = getMonthKeyString();
+        let oldName = appDataObj[key].habits[index];
+        if (oldName === newName) return;
+
+        pushToHistoryStack();
+        appDataObj[key].habits[index] = newName;
+        appDataObj[key].logs[newName] = appDataObj[key].logs[oldName] || {};
+        delete appDataObj[key].logs[oldName];
+
+        saveDataLocally();
+        renderMainTable();
+    }
+
+    function addHabit() {
+        let input = document.getElementById("newHabitInput");
+        let habitName = input.value.trim();
+        if (!habitName) return;
+
+        let key = getMonthKeyString();
+        if (!appDataObj[key].habits.includes(habitName)) {
+            pushToHistoryStack();
+            appDataObj[key].habits.push(habitName);
+            if (!appDataObj[key].logs[habitName]) appDataObj[key].logs[habitName] = {};
+            saveDataLocally();
+            renderMainTable();
+        }
+
+        input.value = "";
+    }
+
+    function deleteHabitItem(habitName) {
+        if (!confirm("¿Deseas eliminar el hábito " + habitName + "?")) return;
+        pushToHistoryStack();
+        let key = getMonthKeyString();
+        appDataObj[key].habits = appDataObj[key].habits.filter(h => h !== habitName);
+        delete appDataObj[key].logs[habitName];
+        saveDataLocally();
+        renderMainTable();
+    }
+
+    function exportData() {
+        let fullBackup = {
+            userName: localStorage.getItem("habit_tracker_user_name") || "",
+            streakData: appDataObj,
+            tasksData: JSON.parse(localStorage.getItem("habit_tracker_3tasks")) || {},
+            identity: localStorage.getItem("habit_tracker_identity") || ""
+        };
+        let blob = new Blob([JSON.stringify(fullBackup, null, 2)], { type: "application/json" });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = "Habit_Tracker_Backup_" + getTodayKeyString() + ".json";
+        a.click();
+    }
+
+    function importData(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                if (imported.userName) localStorage.setItem("habit_tracker_user_name", imported.userName);
+                if (imported.streakData) { appDataObj = imported.streakData; saveDataLocally(); }
+                if (imported.tasksData) localStorage.setItem("habit_tracker_3tasks", JSON.stringify(imported.tasksData));
+                if (imported.identity) localStorage.setItem("habit_tracker_identity", imported.identity);
+                alert("¡Copia de seguridad restaurada con éxito!");
+                initApp();
+            } catch (err) {
+                alert("Error al leer la copia de seguridad.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    window.onload = initApp;
+</script>
+
+</body>
+</html>
